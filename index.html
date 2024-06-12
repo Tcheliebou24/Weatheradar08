@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+        <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+        <title> Weather App </title>
+    </head>
+    <body>
+        <main> 
+            <div class="container">
+                <div class="main-header">
+                    <h1> Weather Radar08 </h1>
+                </div>
+                <div class="background">
+                    <img src="/static/assets/weather-home-background.jpg" alt="" class="desktop-background">
+                </div>
+                <div class="search-bar"> 
+                    <img class="search-icon" src="/static/assets/search.png" alt="">
+                    <form class="search" action="" autocomplete="off" method="post">
+                        <input type="text" name="search" id="search" tabindex="1" placeholder="Search for a city">
+                        <button id="locationButton" type="button">Get My Weather</button>
+                    </form>
+                </div>
+                <div class="footer">
+                    <a href="https://rachanahegde.squarespace.com/"> © Rachana Hegde </a>  
+                </div>
+            </div>
+        </main>
+
+        <script>
+            document.getElementById("locationButton").addEventListener("click", function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        // Send the latitude and longitude to the server
+                        fetch("/get_location_weather", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            },
+                            body: `lat=${lat}&lon=${lon}`
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            // Display the weather information returned by the server
+                            document.getElementById("weatherContainer").innerHTML = data;
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+                    });
+                } else {
+                    console.error("Geolocation is not supported by this browser.");
+                }
+            });
+        </script>
+    </body>
+</html>
